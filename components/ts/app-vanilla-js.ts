@@ -64,7 +64,7 @@ class BigData {
      * @memberof BigData
      */
     constructor() {
-        this.loadData("json/products.json", this.outputData);
+        this.loadData("../json/products.json", this.outputData);
         this.$tableBody = $('#dataTable').find('tbody');
     }
 

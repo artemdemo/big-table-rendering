@@ -48,7 +48,7 @@ var BigData = (function () {
             '<td>%qty%</td>',
             '</tr>'
         ].join('');
-        this.loadData("json/products.json", this.outputData);
+        this.loadData("../json/products.json", this.outputData);
         this.$tableBody = $('#dataTable').find('tbody');
     }
     /**
@@ -110,4 +110,4 @@ var BigData = (function () {
 window.onload = function () {
     var bData = new BigData();
 };
-//# sourceMappingURL=app.js.map
+//# sourceMappingURL=app-vanilla-js.js.map
