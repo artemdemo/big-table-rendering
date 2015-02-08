@@ -1,37 +1,24 @@
 module.exports = function(grunt) {
 
     grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
-        typescript: {
-            base: {
-                src: ['components/ts/*.ts'],
-                dest: 'js',
-                options: {
-                    module: 'amd', //or commonjs
-                    target: 'es5', //or es3
-                    basePath: 'components/ts',
-                    sourceMap: true,
-                    declaration: true
-                }
-            }
+        exec: {
+            tsPublic: { cmd: 'tsc components/ts/*.ts -outDir js/ -t ES5 --sourceMap -d'}
         },
         watch: {
             typescript: {
                 files: [
                     'components/ts/*.ts'
                 ],
-                tasks: ['typescript'],
-                options: {
-                    nospawn: true
-                }
+                tasks: ['exec:tsPublic'],
+                options: { livereload: true }
             }
         }
     });
 
-    grunt.loadNpmTasks('grunt-typescript');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-exec');
 
 
     // Default tasks
-    grunt.registerTask('default', ['typescript', 'watch']);
+    grunt.registerTask('default', ['exec:tsPublic', 'watch']);
 };

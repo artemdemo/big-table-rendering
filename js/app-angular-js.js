@@ -1,4 +1,2 @@
-/**
- * Created by artem on 2/8/15.
- */
+/// <reference path="../types/angular.d.ts"/>
 //# sourceMappingURL=app-angular-js.js.map

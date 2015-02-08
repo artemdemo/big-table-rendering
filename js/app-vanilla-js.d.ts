@@ -1,4 +1,3 @@
-declare var $: any;
 /**
  * @class BigData
  */
