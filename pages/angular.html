@@ -22,12 +22,12 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th></th>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr ng-repeat="item in products track by item.id">
+                <th>{{ $index }}</th>
+                <td>{{ item.name }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.tax }}</td>
+                <td>{{ item.quantity }}</td>
             </tr>
         </tbody>
     </table>
