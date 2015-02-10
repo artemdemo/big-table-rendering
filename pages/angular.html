@@ -16,14 +16,14 @@
     <form>
         <div class="form-group">
             <label for="search-input">Search</label>
-            <input type="text" class="form-control" ng-model="search.name" id="search-input" placeholder="Search">
+            <input type="text" class="form-control" ng-model="search" id="search-input" placeholder="Search">
         </div>
     </form>
 
     <table id="dataTable" class="table table-striped">
         <thead>
             <tr>
-                <th>#</th>
+                <th ng-click="addProducts()">#</th>
                 <th>Name</th>
                 <th>Price</th>
                 <th>Tax</th>
@@ -33,7 +33,7 @@
         <tbody>
         </tbody>
     </table>
-    <repeater data-items="products" data-model="search.name"></repeater>
+    <repeater data-items="products"></repeater>
 
 </div>
 

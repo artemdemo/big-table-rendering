@@ -31,15 +31,19 @@ var bigData = angular.module('bigData', []);
 (function(app){
     "use strict";
 
-    var mainCtrl = function($scope, dataFactory){
+    var mainCtrl = function($scope, $filter, $timeout, dataFactory){
         $scope.products = [{},{}];
         dataFactory.loadData()
             .then(function(Menu){
                 $scope.products = Menu.products;
             });
+
+        $scope.addProducts = function() {
+            $scope.products = [{},{}];
+        };
     };
 
-    app.controller('mainCtrl', ['$scope', 'dataFactory', mainCtrl]);
+    app.controller('mainCtrl', ['$scope', '$filter', '$timeout', 'dataFactory', mainCtrl]);
 })( bigData );
 
 
@@ -89,26 +93,21 @@ var bigData = angular.module('bigData', []);
 
         var link = function(scope, element, attrs) {
             $elm = element;
+
             scope.$watch(function(){
                 return scope.items.length;
             }, function() {
+                console.log('link');
                 itemsList = scope.items;
                 $elm.empty();
                 setTimeout(function () { printGroup() });
-            });
-            scope.$watch(function(){
-                return scope.model
-            }, function( newValue ) {
-                console.log( $filter('filter')( scope.items, newValue ) );
-
             });
         };
 
         return {
             restrict: 'E',
             scope: {
-                items: '=',
-                model: '='
+                items: '='
             },
             replace: false,
             link: link
