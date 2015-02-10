@@ -3,9 +3,8 @@
 <head>
     <title>Big Data - Angular JS</title>
 
-    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
     <script src="../node_modules/angular/angular.min.js"></script>
-    <script src="../js/app-angular.js"></script>
+    <script src="../js/app-angular-regural.js"></script>
 
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
 </head>
@@ -31,10 +30,15 @@
             </tr>
         </thead>
         <tbody>
+            <tr ng-repeat="item in products | filter:search as results">
+                <th>{{ $index }}</th>
+                <td>{{ item.name }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.tax }}</td>
+                <td>{{ item.quantity }}</td>
+            </tr>
         </tbody>
     </table>
-    <repeater data-items="products" data-model="search.name"></repeater>
-
 </div>
 
 </body>
