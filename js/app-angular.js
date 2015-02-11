@@ -4,6 +4,14 @@ var bigData = angular.module('bigData', []);
 (function(app){
     "use strict";
 
+    /**
+     * Factory
+     *
+     * @class dataFactory
+     * @param $http
+     * @param $q
+     * @returns {{}}
+     */
     var dataFactory = function($http, $q) {
         var dataFactory = {};
 
@@ -28,29 +36,46 @@ var bigData = angular.module('bigData', []);
 })( bigData );
 
 
+
 (function(app){
     "use strict";
 
-    var mainCtrl = function($scope, $filter, $timeout, dataFactory){
-        $scope.products = [{},{}];
+    /**
+     * Controller
+     *
+     * @class mainCtrl
+     * @param $scope
+     * @param $timeout
+     * @param dataFactory
+     */
+    var mainCtrl = function($scope, $timeout, dataFactory){
+        $scope.products = [];
+
         dataFactory.loadData()
             .then(function(Menu){
                 $scope.products = Menu.products;
             });
 
-        $scope.addProducts = function() {
-            $scope.products = [{},{}];
+        $scope.search = function() {
+            console.log('search');
+            $scope.searchName = $('#search-input').val();
         };
     };
 
-    app.controller('mainCtrl', ['$scope', '$filter', '$timeout', 'dataFactory', mainCtrl]);
+    app.controller('mainCtrl', ['$scope', '$timeout', 'dataFactory', mainCtrl]);
 })( bigData );
 
 
 (function( app ){
     "use strict";
 
-    var repeaterDirective = function($filter){
+    /**
+     * Directive Repeater
+     *
+     * @class repeaterDirective
+     * @returns {{restrict: string, scope: {items: string, searchBy: string}, replace: boolean, link: link}}
+     */
+    var repeaterDirective = function(){
         var template = [
             '<div class="row">',
                 '<div class="col-sm-2"><strong>%index%</strong></div>',
@@ -62,7 +87,11 @@ var bigData = angular.module('bigData', []);
         ].join('');
 
         var stepAmount = 100;
+
         var stepIndex = 1;
+        var stepSearchIndex = 1;
+        var searchString = '';
+
         var $elm = null;
 
         var itemsList = [];
@@ -86,8 +115,32 @@ var bigData = angular.module('bigData', []);
             if (stepIndex * stepAmount < itemsList.length + stepAmount) {
                 setTimeout(function () { printGroup() });
             } else {
+                console.log('%cTable is ready', 'font-weight: 700');
                 stepAmount = 100;
                 stepIndex = 1;
+            }
+        };
+
+        var filterRows = function() {
+            var start, finish;
+            finish = stepSearchIndex * stepAmount - 1;
+            finish = finish > itemsList.length ? itemsList.length : finish + 1;
+            start = (stepSearchIndex - 1) * stepAmount;
+            for (var i = start; i < finish; i++) {
+                var product = itemsList[i];
+                if ( product.name.search(new RegExp(searchString, "i")) > -1 || searchString == '' ) {
+                    $elm[0].childNodes[i].style.display = "block";
+                } else {
+                    $elm[0].childNodes[i].style.display = "none";
+                }
+            }
+            stepSearchIndex++;
+            if (stepSearchIndex * stepAmount < itemsList.length + stepAmount) {
+                setTimeout(function () { filterRows() });
+            } else {
+                console.log('%cSearch finished', 'font-weight: 700; color: green;');
+                stepAmount = 100;
+                stepSearchIndex = 1;
             }
         };
 
@@ -97,23 +150,29 @@ var bigData = angular.module('bigData', []);
             scope.$watch(function(){
                 return scope.items.length;
             }, function() {
-                console.log('link');
                 itemsList = scope.items;
-                $elm.empty();
                 setTimeout(function () { printGroup() });
+            });
+
+            scope.$watch(function(){
+                return scope.searchBy;
+            },function(newValue){
+                searchString = newValue;
+                setTimeout(function () { filterRows() });
             });
         };
 
         return {
             restrict: 'E',
             scope: {
-                items: '='
+                items: '=',
+                searchBy: '@'
             },
             replace: false,
             link: link
         }
     };
 
-    app.directive('repeater', ['$filter', repeaterDirective]);
+    app.directive('repeater', [ repeaterDirective ]);
 
 })( bigData );
