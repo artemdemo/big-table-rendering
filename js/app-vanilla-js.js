@@ -13,32 +13,10 @@ var BigData = function () {
 	var dataObjectLength;
 
 	/**
-	 * Step index
+	 * Main print object
 	 */
-	var stepIndex = 1;
+	var printWorker;
 
-	/**
-	 * How much rows will be printed in each step
-	 */
-	var stepAmount = 100;
-
-	/**
-	 * Dom element of the table body
-	 */
-	var $tableBody;
-
-	/**
-	 * Template for row in the data table
-	 */
-	var tableStringTmpl = [
-		'<tr>',
-			'<th>%index%</th>',
-			'<td>%name%</td>',
-			'<td>%price%</td>',
-			'<td>%tax%</td>',
-			'<td>%qty%</td>',
-		'</tr>'
-	].join('');
 
 	/*
 	 * Initialisaion
@@ -46,10 +24,11 @@ var BigData = function () {
 	this.init = function () {
 		var searchForm;
 
+		printWorker = new PrintWorker();
+		printWorker.init();
+
 		loadData(function(){
-			outputData();
-			//$tableBody = $('#dataTable').find('tbody');
-			$tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+			printWorker.outputData( dataObject.products );
 
 			searchForm = document.forms[0];
 			searchForm.addEventListener("submit", function(evt){
@@ -63,68 +42,20 @@ var BigData = function () {
 	 * Proceede search in array
 	 */
 	function searchFor ( query ) {
+		var product;
+		var results = [];
 
-	}
+		console.log( "Search for -> " + query );
 
-	/**
-	 * Printing data
-	 */
-	function outputData () {
-		setTimeout(function(){
-			printNextStep();
-		});
-	}
-
-	/**
-	 * Definition of how to print each group
-	 */
-	function printNextStep () {
-		var fragment, product;
-		var tr, th, td;
-		var start, finish;
-		
-		finish = stepIndex * stepAmount - 1;
-		finish = finish > dataObjectLength ? dataObjectLength : finish + 1;
-		start = (stepIndex - 1) * stepAmount;
-
-		// Creating fragment that will be hold next group of rows
-		fragment = document.createDocumentFragment();
-
-		for( var i=start; i < finish; i++) {
+		for (var i = 0; i < dataObjectLength; i++) {
 			product = dataObject.products[i];
-			tr = document.createElement('tr');
-			th = document.createElement('th');
-			th.appendChild(document.createTextNode( i.toString() ));
-			tr.appendChild( th );
+			if ( product.name.indexOf( query ) > -1 ) results.push( product );
+		};
 
-			td = document.createElement('td');
-			td.appendChild(document.createTextNode( product.name ));
-			tr.appendChild( td );
-			td = document.createElement('td');
-			td.appendChild(document.createTextNode( product.price ));
-			tr.appendChild( td );
-			td = document.createElement('td');
-			td.appendChild(document.createTextNode( product.tax ));
-			tr.appendChild( td );
-			td = document.createElement('td');
-			td.appendChild(document.createTextNode( product.quantity ));
-			tr.appendChild( td );
-
-			fragment.appendChild( tr );
-		}
-
-		$tableBody.appendChild( fragment );
-
-		stepIndex++;
-
-		if (stepIndex * stepAmount < dataObjectLength + stepAmount) {
-			outputData();
-		} else {
-			console.log('%cTable is ready', 'font-weight: 700');
-			stepAmount = 100;
-			stepIndex = 1;
-		}
+		console.log( results );
+		printWorker.outputData( results );
 	}
+	
 
 	/*
 	 * Loading table data
@@ -155,7 +86,122 @@ var BigData = function () {
 }
 
 
+/************************************************************************
+ * Print worker knows how to print big amount of data
+ */
+function PrintWorker () {
 
+	/**
+	 * Main property that contain array of data
+	 */
+	var arrayOfData;
+
+	/**
+	 * Fetching deep data from objects is resource consuming operation, therefore it is better to store it in the variable
+	 */
+	var arrayOfDataLength;
+
+	/**
+	 * Step index
+	 */
+	var stepIndex = 1;
+
+	/**
+	 * How much rows will be printed in each step
+	 */
+	var stepAmount = 100;
+
+	/**
+	 * Dom element of the table
+	 */
+	var $table;
+
+	/**
+	 * Dom element of the table body
+	 */
+	var $tableBody;
+
+	this.init = function() {
+		$table = document.getElementById('dataTable');
+	}
+
+	/**
+	 * Printing data
+	 */
+	this.outputData = function ( newArrayOfData ) {
+		var $tbody;
+		arrayOfData = newArrayOfData;
+		arrayOfDataLength = newArrayOfData.length;
+
+		$tbody = $table.getElementsByTagName('tbody')[0];
+		$tbody.parentNode.removeChild($tbody);
+		$tbody = document.createElement('tbody');
+		$table.appendChild( $tbody );
+
+		$tableBody = $table.getElementsByTagName('tbody')[0];
+
+		printNextStep();
+	}
+
+	/**
+	 * Definition of how to print each group
+	 */
+	function printNextStep () {
+		var fragment, product;
+		var tr, th, td;
+		var start, finish;
+		
+		finish = stepIndex * stepAmount - 1;
+		finish = finish > arrayOfDataLength ? arrayOfDataLength : finish + 1;
+		start = (stepIndex - 1) * stepAmount;
+
+		// Creating fragment that will be hold next group of rows
+		fragment = document.createDocumentFragment();
+
+		for( var i=start; i < finish; i++) {
+			product = arrayOfData[i];
+			tr = document.createElement('tr');
+			th = document.createElement('th');
+			th.appendChild(document.createTextNode( i.toString() ));
+			tr.appendChild( th );
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode( product.name ));
+			tr.appendChild( td );
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode( product.price ));
+			tr.appendChild( td );
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode( product.tax ));
+			tr.appendChild( td );
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode( product.quantity ));
+			tr.appendChild( td );
+
+			fragment.appendChild( tr );
+		}
+
+		$tableBody.appendChild( fragment );
+
+		stepIndex++;
+
+		if (stepIndex * stepAmount < arrayOfDataLength + stepAmount) {
+			setTimeout(function(){
+				printNextStep();
+			});
+		} else {
+			console.log('%cTable is ready', 'font-weight: 700');
+			stepAmount = 100;
+			stepIndex = 1;
+		}
+	}
+
+}
+
+
+/************************************************************************
+ * Let's go!
+ */
 window.onload = function(){
 	var bData = new BigData();
 	bData.init();
