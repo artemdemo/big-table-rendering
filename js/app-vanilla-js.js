@@ -1,113 +1,162 @@
-/**
- * @class BigData
- */
-var BigData = (function () {
-    /**
-     * @constructor
-     * @memberof BigData
-     */
-    function BigData() {
-        /**
-         * Main data object
-         * @memberof BigData
-         * @private
-         * @type {Object}
-         */
-        this.dataObject = {
-            products: []
-        };
-        /**
-         * Step index
-         *
-         * @memberof BigData
-         * @private
-         * @type {Number}
-         */
-        this.index = 1;
-        /**
-         * How much rows will be printed in each step
-         *
-         * @memberof BigData
-         * @private
-         * @type {Number}
-         */
-        this.stepAmount = 100;
-        /**
-         * Template for row in the data table
-         *
-         * @memberof BigData
-         * @private
-         * @type {String}
-         */
-        this.tableStringTmpl = [
-            '<tr>',
-            '<th>%index%</th>',
-            '<td>%name%</td>',
-            '<td>%price%</td>',
-            '<td>%tax%</td>',
-            '<td>%qty%</td>',
-            '</tr>'
-        ].join('');
-        this.loadData("../json/products.json", this.outputData);
-        this.$tableBody = $('#dataTable').find('tbody');
-    }
-    /**
-     * Printing data
-     *
-     * @function outputData
-     * @memberof BigData
-     */
-    BigData.prototype.outputData = function () {
-        var _this = this;
-        setTimeout(function () { return _this.printGroup(); });
-    };
-    /**
-     * Definition of how to print each group
-     *
-     * @function printGroup
-     * @memberof BigData
-     */
-    BigData.prototype.printGroup = function () {
-        var _this = this;
-        var start, finish;
-        finish = this.index * this.stepAmount - 1;
-        finish = finish > this.dataObject.products.length ? this.dataObject.products.length : finish + 1;
-        start = (this.index - 1) * this.stepAmount;
-        for (var i = start; i < finish; i++) {
-            var product = this.dataObject.products[i];
-            var newRow = this.tableStringTmpl;
-            newRow = newRow.replace('%index%', i.toString());
-            newRow = newRow.replace('%name%', product.name);
-            newRow = newRow.replace('%price%', product.price);
-            newRow = newRow.replace('%tax%', product.tax);
-            newRow = newRow.replace('%qty%', product.quantity);
-            this.$tableBody.append(newRow);
-        }
-        this.index++;
-        setTimeout(function () { return _this.printGroup(); });
-    };
-    /**
-     * Loading data from the server
-     *
-     * @function loadData
-     * @memberof BigData
-     * @public
-     * @param strUrl
-     * @param callback
-     * @return {any} Promise
-     * @descritpion
-     * Return promise
-     */
-    BigData.prototype.loadData = function (strUrl, callback) {
-        var _this = this;
-        $.getJSON(strUrl, function (data) {
-            _this.dataObject = data;
-            callback.apply(_this); // Call callback in context of current object
-        });
-    };
-    return BigData;
-})();
-window.onload = function () {
-    var bData = new BigData();
+var BigData = function () {
+
+	/**
+	 * Main data object
+	 */
+	var dataObject = {
+		products: []
+	};
+
+	/**
+	 * Fetching deep data from objects is resource consuming operation, therefore it is better to store it in the variable
+	 */
+	var dataObjectLength;
+
+	/**
+	 * Step index
+	 */
+	var stepIndex = 1;
+
+	/**
+	 * How much rows will be printed in each step
+	 */
+	var stepAmount = 100;
+
+	/**
+	 * Dom element of the table body
+	 */
+	var $tableBody;
+
+	/**
+	 * Template for row in the data table
+	 */
+	var tableStringTmpl = [
+		'<tr>',
+			'<th>%index%</th>',
+			'<td>%name%</td>',
+			'<td>%price%</td>',
+			'<td>%tax%</td>',
+			'<td>%qty%</td>',
+		'</tr>'
+	].join('');
+
+	/*
+	 * Initialisaion
+	 */
+	this.init = function () {
+		var searchForm;
+
+		loadData(function(){
+			outputData();
+			//$tableBody = $('#dataTable').find('tbody');
+			$tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+
+			searchForm = document.forms[0];
+			searchForm.addEventListener("submit", function(evt){
+				evt.preventDefault();
+				searchFor( searchForm.elements['query'].value );
+			});
+		});
+	}
+
+	/**
+	 * Proceede search in array
+	 */
+	function searchFor ( query ) {
+
+	}
+
+	/**
+	 * Printing data
+	 */
+	function outputData () {
+		setTimeout(function(){
+			printNextStep();
+		});
+	}
+
+	/**
+	 * Definition of how to print each group
+	 */
+	function printNextStep () {
+		var fragment, product;
+		var tr, th, td;
+		var start, finish;
+		
+		finish = stepIndex * stepAmount - 1;
+		finish = finish > dataObjectLength ? dataObjectLength : finish + 1;
+		start = (stepIndex - 1) * stepAmount;
+
+		// Creating fragment that will be hold next group of rows
+		fragment = document.createDocumentFragment();
+
+		for( var i=start; i < finish; i++) {
+			product = dataObject.products[i];
+			tr = document.createElement('tr');
+			th = document.createElement('th');
+			th.appendChild(document.createTextNode( i.toString() ));
+			tr.appendChild( th );
+
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode( product.name ));
+			tr.appendChild( td );
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode( product.price ));
+			tr.appendChild( td );
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode( product.tax ));
+			tr.appendChild( td );
+			td = document.createElement('td');
+			td.appendChild(document.createTextNode( product.quantity ));
+			tr.appendChild( td );
+
+			fragment.appendChild( tr );
+		}
+
+		$tableBody.appendChild( fragment );
+
+		stepIndex++;
+
+		if (stepIndex * stepAmount < dataObjectLength + stepAmount) {
+			outputData();
+		} else {
+			console.log('%cTable is ready', 'font-weight: 700');
+			stepAmount = 100;
+			stepIndex = 1;
+		}
+	}
+
+	/*
+	 * Loading table data
+	 */
+	function loadData ( callback ) {
+		var request = new XMLHttpRequest();
+		request.open('GET', '../json/products.json', true);
+
+		console.log( request );
+
+		request.onload = function() {
+			if (request.status >= 200 && request.status < 400) {
+				// Success!
+				dataObject = JSON.parse(request.responseText);
+				dataObjectLength = dataObject.products.length;
+				callback();
+			} else {
+				// We reached our target server, but it returned an error
+			}
+		};
+
+		request.onerror = function() {
+			// There was a connection error of some sort
+		};
+
+		request.send();
+	}
+}
+
+
+
+window.onload = function(){
+	var bData = new BigData();
+	bData.init();
 };
-//# sourceMappingURL=app-vanilla-js.js.map
