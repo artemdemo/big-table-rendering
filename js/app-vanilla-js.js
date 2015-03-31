@@ -77,7 +77,7 @@ var BigData = function () {
 	 */
 	function loadData ( callback ) {
 		var request = new XMLHttpRequest();
-		request.open('GET', '../json/products.json', true);
+		request.open('GET', '../json/products-20k.json', true);
 
 		console.log( request );
 
