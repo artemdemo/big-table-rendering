@@ -22,21 +22,36 @@ var BigData = function () {
 	 * Initialisaion
 	 */
 	this.init = function () {
-		var searchForm;
-
 		printWorker = new PrintWorker();
 		printWorker.init();
 
 		loadData(function(){
 			printWorker.outputData( dataObject.products );
 
-			searchForm = document.forms[0];
-			searchForm.addEventListener("submit", function(evt){
-				evt.preventDefault();
-				searchFor( searchForm.elements['query'].value );
-			});
+			addListeners();
 		});
 	}
+
+	/*
+	 * Attach listeners to DOM
+	 */
+	function addListeners () {
+		var searchForm = document.forms[0];
+		var queryInput = searchForm.elements['query'];
+
+		searchForm.addEventListener("submit", function(evt){
+			evt.preventDefault();
+			searchFor( queryInput.value );
+		});
+
+		queryInput.addEventListener("keyup", function(evt){
+			console.log( queryInput.value );
+
+			setTimeout(function(){
+				searchFor( queryInput.value );
+			}, 20);
+		});
+	};
 
 	/**
 	 * Proceede search in array
@@ -52,7 +67,7 @@ var BigData = function () {
 			if ( product.name.indexOf( query ) > -1 ) results.push( product );
 		};
 
-		console.log( results );
+		//console.log( results );
 		printWorker.outputData( results );
 	}
 	
@@ -91,6 +106,8 @@ var BigData = function () {
  */
 function PrintWorker () {
 
+	var self = this;
+
 	/**
 	 * Main property that contain array of data
 	 */
@@ -121,6 +138,13 @@ function PrintWorker () {
 	 */
 	var $tableBody;
 
+	/**
+	 * Stop printing of table
+	 * Important when you need update table on the fly,
+	 * for instance when updating is on the fly when user is typing in search input
+	 */
+	this.stopPrinting = false;
+
 	this.init = function() {
 		$table = document.getElementById('dataTable');
 	}
@@ -147,8 +171,7 @@ function PrintWorker () {
 	 * Definition of how to print each group
 	 */
 	function printNextStep () {
-		var fragment, product;
-		var tr, th, td;
+		var fragment;
 		var start, finish;
 		
 		finish = stepIndex * stepAmount - 1;
@@ -159,26 +182,8 @@ function PrintWorker () {
 		fragment = document.createDocumentFragment();
 
 		for( var i=start; i < finish; i++) {
-			product = arrayOfData[i];
-			tr = document.createElement('tr');
-			th = document.createElement('th');
-			th.appendChild(document.createTextNode( i.toString() ));
-			tr.appendChild( th );
 
-			td = document.createElement('td');
-			td.appendChild(document.createTextNode( product.name ));
-			tr.appendChild( td );
-			td = document.createElement('td');
-			td.appendChild(document.createTextNode( product.price ));
-			tr.appendChild( td );
-			td = document.createElement('td');
-			td.appendChild(document.createTextNode( product.tax ));
-			tr.appendChild( td );
-			td = document.createElement('td');
-			td.appendChild(document.createTextNode( product.quantity ));
-			tr.appendChild( td );
-
-			fragment.appendChild( tr );
+			fragment.appendChild( createRow( i, arrayOfData[i] ) );
 		}
 
 		$tableBody.appendChild( fragment );
@@ -194,7 +199,38 @@ function PrintWorker () {
 			stepAmount = 100;
 			stepIndex = 1;
 		}
-	}
+	};
+
+	/**
+	 * Create table row 
+	 *
+	 * @param i {Integer} - row index
+	 * @param product {Object} - Product data that should be printed
+	 * @return {HTML Object} - <tr> row
+	 */
+	function createRow ( i, product ) {
+		var tr, th, td;
+
+		tr = document.createElement('tr');
+		th = document.createElement('th');
+		th.appendChild(document.createTextNode( i.toString() ));
+		tr.appendChild( th );
+
+		td = document.createElement('td');
+		td.appendChild(document.createTextNode( product.name ));
+		tr.appendChild( td );
+		td = document.createElement('td');
+		td.appendChild(document.createTextNode( product.price ));
+		tr.appendChild( td );
+		td = document.createElement('td');
+		td.appendChild(document.createTextNode( product.tax ));
+		tr.appendChild( td );
+		td = document.createElement('td');
+		td.appendChild(document.createTextNode( product.quantity ));
+		tr.appendChild( td );
+
+		return tr;
+	};
 
 }
 
