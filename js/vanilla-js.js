@@ -165,11 +165,9 @@ function PrintWorker () {
 
 		$tbody = $table.getElementsByTagName('tbody')[0];
 		$tbody.parentNode.removeChild($tbody);
+
 		$tbody = document.createElement('tbody');
 		$table.appendChild( $tbody );
-
-		$tableBody = $table.getElementsByTagName('tbody')[0];
-
 		printNextStep();
 	}
 
@@ -179,6 +177,13 @@ function PrintWorker () {
 	function printNextStep () {
 		var fragment;
 		var start, finish;
+		var tbody;
+
+		tbody = document.getElementsByTagName('tbody');
+		if ( tbody == 0 ) {
+			console.log('There is no tbody for next step, aborting printNextStep()');
+			return false;
+		} else tbody = tbody[0];
 		
 		finish = stepIndex * stepAmount - 1;
 		finish = finish > arrayOfDataLength ? arrayOfDataLength : finish + 1;
@@ -188,11 +193,11 @@ function PrintWorker () {
 		fragment = document.createDocumentFragment();
 
 		for( var i=start; i < finish; i++) {
-
 			fragment.appendChild( createRow( i, arrayOfData[i] ) );
 		}
 
-		$tableBody.appendChild( fragment );
+
+		tbody.appendChild( fragment );
 
 		stepIndex++;
 
