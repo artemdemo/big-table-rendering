@@ -20,12 +20,14 @@ var BigData = function () {
 
 	/*
 	 * Initialisaion
+	 *
+	 * @param url {String} - url to the json data
 	 */
-	this.init = function () {
+	this.init = function ( url ) {
 		printWorker = new PrintWorker();
 		printWorker.init();
 
-		loadData(function(){
+		loadData(url, function(){
 			printWorker.outputData( dataObject.products );
 
 			addListeners();
@@ -75,9 +77,9 @@ var BigData = function () {
 	/*
 	 * Loading table data
 	 */
-	function loadData ( callback ) {
+	function loadData ( url, callback ) {
 		var request = new XMLHttpRequest();
-		request.open('GET', '../json/products-20k.json', true);
+		request.open('GET', url, true);
 
 		console.log( request );
 
@@ -233,12 +235,3 @@ function PrintWorker () {
 	};
 
 }
-
-
-/************************************************************************
- * Let's go!
- */
-window.onload = function(){
-	var bData = new BigData();
-	bData.init();
-};

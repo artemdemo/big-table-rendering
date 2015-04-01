@@ -1,31 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Big Data output in html</title>
+	<title>Big Data output in html</title>
 
-    <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
-    <div class="container">
-        <p class="row">
-            <div class="col-sm-2">
-                <a class="btn btn-primary" href="pages/vanilla.html" role="button">Vanilla JS</a>
-            </div>
-            <div class="col-sm-1">
-                &nbsp;
-            </div>
-            <div class="col-sm-2">
-                <a class="btn btn-primary" href="pages/angular-regural.html" role="button">Angular regural JS</a>
-            </div>
-            <div class="col-sm-1">
-                &nbsp;
-            </div>
-            <div class="col-sm-2">
-                <a class="btn btn-primary" href="pages/angular.html" role="button">Angular JS</a>
-            </div>
-        </p>
-    </div>
+	<div class="container">
+		<p class="row">
+			<h3>Vanilla JS</h3>
+			<ul>
+				<li><a href="pages/vanilla.html?products=5k" role="button">Vanilla JS - 5k</a></li>
+			</ul>
+		</p>
+			
+		<p class="row">
+			<h3>Angular JS (regural)</h3>
+			<ul>
+				<li><a href="pages/angular.html" role="button">Angular JS (regural) - 5k</a></li>
+			</ul>
+		</p>
+
+		<p class="row">
+			<h3>Angular JS (repeater)</h3>
+			<ul>
+				<li><a href="pages/angular-repeater.html" role="button">Angular JS (repeater) - 5k</a></li>
+			</ul>
+		</p>
+	</div>
 
 </body>
 </html>
