@@ -1,47 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Big Data - Angular JS</title>
+	<title>Big Data - Angular JS</title>
 
-    <script src="../node_modules/angular/angular.min.js"></script>
-    <script src="../js/angular-regural.js"></script>
+	<script src="../node_modules/angular/angular.min.js"></script>
+	<script src="../js/angular-regural.js"></script>
 
-    <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
 </head>
 <body ng-app="bigData" ng-controller="mainCtrl">
 
-<div class="container">
+	<div class="container">
 
-    <p>
-        <form class="form-inline">
-            <div class="form-group">
-                <label for="search-input">Search</label>
-                <input type="text" class="form-control" id="search-input" ng-model="search.name" placeholder="Search">
-            </div>
-        </form>
-    </p>
+		<h3><a href="../">Home</a></h3>
 
-    <table id="dataTable" class="table table-striped">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Tax</th>
-                <th>Qty</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="item in products | filter:search as results">
-                <th>{{ $index }}</th>
-                <td>{{ item.name }}</td>
-                <td>{{ item.price }}</td>
-                <td>{{ item.tax }}</td>
-                <td>{{ item.quantity }}</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+		<p>
+			<form class="form-inline">
+				<div class="form-group">
+					<label for="search-input">Search</label>
+					<input type="text" class="form-control" id="search-input" ng-model="search.name" placeholder="Search">
+				</div>
+			</form>
+		</p>
+
+		<table id="dataTable" class="table table-striped">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Name</th>
+					<th>Price</th>
+					<th>Tax</th>
+					<th>Qty</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="item in products | filter:search as results">
+					<th>{{ $index }}</th>
+					<td>{{ item.name }}</td>
+					<td>{{ item.price }}</td>
+					<td>{{ item.tax }}</td>
+					<td>{{ item.quantity }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 
 </body>
 </html>

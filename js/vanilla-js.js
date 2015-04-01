@@ -69,6 +69,8 @@ var BigData = function () {
 			if ( product.name.indexOf( query ) > -1 ) results.push( product );
 		};
 
+		console.log( "Search is ready, found " + results.length );
+
 		//console.log( results );
 		printWorker.outputData( results );
 	}
@@ -81,7 +83,7 @@ var BigData = function () {
 		var request = new XMLHttpRequest();
 		request.open('GET', url, true);
 
-		console.log( request );
+		console.log( 'Data loaded' );
 
 		request.onload = function() {
 			if (request.status >= 200 && request.status < 400) {
@@ -158,6 +160,8 @@ function PrintWorker () {
 		var $tbody;
 		arrayOfData = newArrayOfData;
 		arrayOfDataLength = newArrayOfData.length;
+
+		console.log( 'Start data print' );
 
 		$tbody = $table.getElementsByTagName('tbody')[0];
 		$tbody.parentNode.removeChild($tbody);
